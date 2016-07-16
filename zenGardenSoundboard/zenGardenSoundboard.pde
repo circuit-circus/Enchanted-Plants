@@ -1,5 +1,10 @@
 import ddf.minim.*;
+import processing.serial.*;
+import org.firmata.*;
+import cc.arduino.*;
 AudioPlayer backtrack;
+Arduino arduino; 
+float range;
 
 final static String[] arcadeFiles = {
   "a0", "a1", "a5"
@@ -58,6 +63,10 @@ void setup() {
   size(600, 600);
   smooth();
   noFill();
+  
+    
+  //arduino = new Arduino(this, Arduino.list()[0], 57600);
+  println(Arduino.list());
 
   for ( byte idx = 0; idx != arcadeFiles.length-1; 
     arcades[idx] = minim.loadFile( arcadeFiles[idx++] + ".mp3") );
@@ -83,23 +92,24 @@ void setup() {
   for ( byte idx = 0; idx !=plingFiles.length-1; 
     plings[idx] = minim.loadFile( plingFiles[idx++] + ".mp3") );
 
-balls = new Ball[8];
+  balls = new Ball[8];
   for (int i = 0; i <= balls.length-1; i++) {
     balls[i] = new Ball(i);
   }
 
   backtrack = minim.loadFile("backtrack.mp3", 2048);
-
   backtrack.loop();
+
+  //arduino.pinMode(2, Arduino.INPUT);
 }
 
 void draw() {
   background(255);
-  
+  //range = arduino.analogRead(0);
   //Volume control
   //kliks[num].setGain(map(mouseY, 0, width, -20, 20));
   //chimes[num].setGain(map(mouseY, 0, width, -40, 20));
-  
+
   for (int i = 0; i <= balls.length-1; i++) {
     balls[i].display();
   }
