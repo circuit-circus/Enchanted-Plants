@@ -2,9 +2,17 @@ import ddf.minim.*;
 import processing.serial.*;
 import org.firmata.*;
 import cc.arduino.*;
+
+
 AudioPlayer backtrack;
 Arduino arduino; 
 float range;
+
+// Communicate with arduino
+Serial myPort;
+String serialVal;
+float serialNo;
+int lf = 10;    // Linefeed in ASCII
 
 final static String[] arcadeFiles = {
   "a0", "a1", "a5"
@@ -40,9 +48,6 @@ final static String[] plingFiles = {
 };
 
 
-
-
-
 final static AudioPlayer[] arcades = new AudioPlayer[arcadeFiles.length-1];
 final static AudioPlayer[] birds = new AudioPlayer[birdFiles.length-1];
 final static AudioPlayer[] chimes = new AudioPlayer[chimesFiles.length-1];
@@ -63,10 +68,20 @@ void setup() {
   size(600, 600);
   smooth();
   noFill();
+  background(255);
   
     
   //arduino = new Arduino(this, Arduino.list()[0], 57600);
-  println(Arduino.list());
+  //println(Arduino.list());
+  println(Serial.list());
+  String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
+  myPort = new Serial(this, portName, 9600); 
+  myPort.clear();
+  // Throw out the first reading, in case we started reading 
+  // in the middle of a string from the sender.
+  serialVal = myPort.readStringUntil(lf);
+  serialVal = null;
+  
 
   for ( byte idx = 0; idx != arcadeFiles.length-1; 
     arcades[idx] = minim.loadFile( arcadeFiles[idx++] + ".mp3") );
@@ -104,13 +119,30 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+  
   //range = arduino.analogRead(0);
   //Volume control
   //kliks[num].setGain(map(mouseY, 0, width, -20, 20));
   //chimes[num].setGain(map(mouseY, 0, width, -40, 20));
 
+  /*
   for (int i = 0; i <= balls.length-1; i++) {
-    balls[i].display();
-  }
+    balls[i].playSound(plant);
+  }*/
+  
+  while (myPort.available() > 0) {  // If data is available,
+  
+    serialVal = myPort.readStringUntil(lf);
+    if (serialVal != null) {
+      print("Serial val: ");
+      println(serialVal);
+      serialNo = float(serialVal);  // Converts and prints float
+      print("Serial no: ");
+      println(serialNo);
+      balls[0].playSound(serialNo);
+     }
+  } 
+  
+  myPort.clear();
+  
 }
