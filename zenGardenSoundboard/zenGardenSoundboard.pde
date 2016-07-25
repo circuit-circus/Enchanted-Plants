@@ -69,7 +69,7 @@ Ball[] balls;
 
 void setup() {
 
-  size(600, 600);
+  size(10, 10);
   smooth();
   noFill();
   background(255);
