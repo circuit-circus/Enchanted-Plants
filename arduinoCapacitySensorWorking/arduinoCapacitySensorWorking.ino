@@ -34,7 +34,7 @@ void setup() {
   while (!Serial);        // needed to keep leonardo/micro from starting too fast!
 
   Serial.begin(9600);
-  Serial.println("Adafruit MPR121 Capacitive Touch sensor test");
+  //Serial.println("Adafruit MPR121 Capacitive Touch sensor test");
 
   //init_cap( cap1, 0x5A );
   //init_cap( cap2, 0x5D );
@@ -69,7 +69,7 @@ void loop() {
 
     // check if touched
     if ((currtouched1 & _BV(i)) && !(lasttouched1 & _BV(i)) ) {
-      Serial.print(i);
+      Serial.println(i);
       //Serial.println(" was touched");
     }
 
@@ -79,7 +79,7 @@ void loop() {
     }
 
     if ((currtouched2 & _BV(i)) && !(lasttouched2 & _BV(i)) ) {
-      Serial.print(i + 12);
+      Serial.println(i + 12);
       //Serial.println(" was touched");
     }
 

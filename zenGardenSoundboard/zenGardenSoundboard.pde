@@ -2,14 +2,16 @@ import ddf.minim.*;
 import processing.serial.*;
 import org.firmata.*;
 import cc.arduino.*;
+import java.util.*;
 
 
 AudioPlayer backtrack;
 Arduino arduino; 
+Serial myPort;
+
 float range;
 
 // Communicate with arduino
-Serial myPort;
 String serialVal;
 float serialNo;
 int lf = 10;    // Linefeed in ASCII
@@ -47,7 +49,6 @@ final static String[] plingFiles = {
   "p0", "p1", "p3"
 };
 
-
 final static AudioPlayer[] arcades = new AudioPlayer[arcadeFiles.length-1];
 final static AudioPlayer[] birds = new AudioPlayer[birdFiles.length-1];
 final static AudioPlayer[] chimes = new AudioPlayer[chimesFiles.length-1];
@@ -56,6 +57,9 @@ final static AudioPlayer[] fugle = new AudioPlayer[fugleFiles.length-1];
 final static AudioPlayer[] impacts = new AudioPlayer[impactFiles.length-1];
 final static AudioPlayer[] kliks = new AudioPlayer[klikFiles.length-1];
 final static AudioPlayer[] plings = new AudioPlayer[plingFiles.length-1];
+
+ArrayList<AudioPlayer[]> soundList = new ArrayList<AudioPlayer[]>();
+
 
 final Minim minim = new Minim(this);
 
@@ -69,8 +73,8 @@ void setup() {
   smooth();
   noFill();
   background(255);
-  
-    
+
+
   //arduino = new Arduino(this, Arduino.list()[0], 57600);
   //println(Arduino.list());
   println(Serial.list());
@@ -81,7 +85,7 @@ void setup() {
   // in the middle of a string from the sender.
   serialVal = myPort.readStringUntil(lf);
   serialVal = null;
-  
+
 
   for ( byte idx = 0; idx != arcadeFiles.length-1; 
     arcades[idx] = minim.loadFile( arcadeFiles[idx++] + ".mp3") );
@@ -107,10 +111,21 @@ void setup() {
   for ( byte idx = 0; idx !=plingFiles.length-1; 
     plings[idx] = minim.loadFile( plingFiles[idx++] + ".mp3") );
 
+  soundList.add(arcades);
+  soundList.add(birds);
+  soundList.add(chimes);
+  soundList.add(drips);
+  soundList.add(fugle);
+  soundList.add(impacts);
+  soundList.add(kliks);
+  soundList.add(plings);
+
+  /*
   balls = new Ball[8];
   for (int i = 0; i <= balls.length-1; i++) {
     balls[i] = new Ball(i);
   }
+  */
 
   backtrack = minim.loadFile("backtrack.mp3", 2048);
   backtrack.loop();
@@ -119,7 +134,7 @@ void setup() {
 }
 
 void draw() {
-  
+
   //range = arduino.analogRead(0);
   //Volume control
   //kliks[num].setGain(map(mouseY, 0, width, -20, 20));
@@ -127,11 +142,11 @@ void draw() {
 
   /*
   for (int i = 0; i <= balls.length-1; i++) {
-    balls[i].playSound(plant);
-  }*/
-  
+   balls[i].playSound(plant);
+   }*/
+
   while (myPort.available() > 0) {  // If data is available,
-  
+
     serialVal = myPort.readStringUntil(lf);
     if (serialVal != null) {
       print("Serial val: ");
@@ -139,10 +154,21 @@ void draw() {
       serialNo = float(serialVal);  // Converts and prints float
       print("Serial no: ");
       println(serialNo);
-      balls[0].playSound(serialNo);
-     }
+
+      serialNo = map(serialNo, 0, 23, 0, 7);
+      int serialNoInt = int(serialNo);
+      
+      println(serialNoInt);
+
+      AudioPlayer[] currentSound = soundList.get(serialNoInt);
+
+      int no = int(random(0, currentSound.length));
+      if (currentSound[no].isPlaying() == false) {
+        currentSound[no].rewind();
+        currentSound[no].play();
+      }
+    }
   } 
-  
+
   myPort.clear();
-  
 }
