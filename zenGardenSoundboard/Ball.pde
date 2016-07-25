@@ -17,7 +17,7 @@ class Ball {
     //print("in playsound: ");
     //println(plant);
 
-    switch(plant) {
+    switch(int(plant)) {
     case 0:
       int no0 = int(random(0, arcades.length));
       if (arcades[no0].isPlaying() == false) {
