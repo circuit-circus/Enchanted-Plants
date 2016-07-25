@@ -42,20 +42,20 @@ void setup() {
   // Default address is 0x5A, if tied to 3.3V its 0x5B
   // If tied to SDA its 0x5C and if SCL then 0x5D
 
-  Serial.println( "looking for 0x5A" );
+  //Serial.println( "looking for 0x5A" );
   if (!cap1.begin(0x5A)) {
-    Serial.println("MPR121 0x5A not found, check wiring?");
+    //Serial.println("MPR121 0x5A not found, check wiring?");
     while (1);
   }
-  Serial.println("MPR121 0x5A found!");
+  //Serial.println("MPR121 0x5A found!");
 
 
-  Serial.println( "looking for 0x5D" );
+  //Serial.println( "looking for 0x5D" );
   if (!cap2.begin(0x5D)) {
-    Serial.println("MPR121 0x5D not found, check wiring?");
+    //Serial.println("MPR121 0x5D not found, check wiring?");
     while (1);
   }
-  Serial.println("MPR121 0x5D found!");
+  //Serial.println("MPR121 0x5D found!");
 
 
 }
@@ -70,21 +70,21 @@ void loop() {
     // check if touched
     if ((currtouched1 & _BV(i)) && !(lasttouched1 & _BV(i)) ) {
       Serial.print(i);
-      Serial.println(" was touched");
+      //Serial.println(" was touched");
     }
 
     // check if released
     if (!(currtouched1 & _BV(i)) && (lasttouched1 & _BV(i)) ) {
-      Serial.print(i); Serial.println(" was released");
+      //Serial.print(i); Serial.println(" was released");
     }
 
     if ((currtouched2 & _BV(i)) && !(lasttouched2 & _BV(i)) ) {
       Serial.print(i + 12);
-      Serial.println(" was touched");
+      //Serial.println(" was touched");
     }
 
     if (!(currtouched2 & _BV(i)) && (lasttouched2 & _BV(i)) ) {
-      Serial.print(i + 12); Serial.println(" was released");
+      //Serial.print(i + 12); Serial.println(" was released");
     }
 
   }
@@ -115,12 +115,3 @@ void loop() {
   delay(100);
 }
 
-void init_cap ( Adafruit_MPR121 cap, uint8_t address ) {
-  Serial.print( "looking for address " );
-  Serial.println( address, HEX );
-  if (!cap.begin( address )) {
-    Serial.println("MPR121 not found, check wiring?");
-    while (1);
-  }
-  Serial.println("MPR121 found!");
-}
