@@ -63,9 +63,6 @@ ArrayList<AudioPlayer[]> soundList = new ArrayList<AudioPlayer[]>();
 
 final Minim minim = new Minim(this);
 
-int num = 1;
-
-Ball[] balls;
 
 void setup() {
 
@@ -73,20 +70,15 @@ void setup() {
   smooth();
   noFill();
   background(255);
-
-
-  //arduino = new Arduino(this, Arduino.list()[0], 57600);
-  //println(Arduino.list());
+  
+   // init Arduino 
   println(Serial.list());
   String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
   myPort = new Serial(this, portName, 9600); 
   myPort.clear();
-  // Throw out the first reading, in case we started reading 
-  // in the middle of a string from the sender.
-  serialVal = myPort.readStringUntil(lf);
-  serialVal = null;
-
-
+  
+  
+  // Fill sounds
   for ( byte idx = 0; idx != arcadeFiles.length-1; 
     arcades[idx] = minim.loadFile( arcadeFiles[idx++] + ".mp3") );
 
@@ -120,44 +112,33 @@ void setup() {
   soundList.add(kliks);
   soundList.add(plings);
 
-  /*
-  balls = new Ball[8];
-  for (int i = 0; i <= balls.length-1; i++) {
-    balls[i] = new Ball(i);
-  }
-  */
-
+  // Start backtrack
   backtrack = minim.loadFile("backtrack.mp3", 2048);
   backtrack.loop();
-
-  //arduino.pinMode(2, Arduino.INPUT);
+  
+  // Init serial prints from Arduino
+  serialVal = myPort.readStringUntil(lf);
+  serialVal = null;
 }
 
 void draw() {
 
-  //range = arduino.analogRead(0);
-  //Volume control
-  //kliks[num].setGain(map(mouseY, 0, width, -20, 20));
-  //chimes[num].setGain(map(mouseY, 0, width, -40, 20));
-
-  /*
-  for (int i = 0; i <= balls.length-1; i++) {
-   balls[i].playSound(plant);
-   }*/
+ 
 
   while (myPort.available() > 0) {  // If data is available,
 
     serialVal = myPort.readStringUntil(lf);
     if (serialVal != null) {
-      print("Serial val: ");
+      print("Serial val from Arduino: ");
       println(serialVal);
       serialNo = float(serialVal);  // Converts and prints float
-      print("Serial no: ");
+      print("Serial no in float: ");
       println(serialNo);
 
-      serialNo = map(serialNo, 0, 23, 0, 7);
+      serialNo = map(serialNo, 0, 23, 0, 7); 
       int serialNoInt = int(serialNo);
       
+      print("Mapped sound: ");
       println(serialNoInt);
 
       AudioPlayer[] currentSound = soundList.get(serialNoInt);
