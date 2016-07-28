@@ -16,6 +16,8 @@ String serialVal;
 float serialNo;
 int lf = 10;    // Linefeed in ASCII
 
+int count = 0;
+
 final static String[] arcadeFiles = {
   "a0", "a1", "a5"
 };
@@ -70,38 +72,38 @@ void setup() {
   smooth();
   noFill();
   background(255);
-  
-   // init Arduino 
+
+  // init Arduino 
   println(Serial.list());
-  String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
+  String portName = Serial.list()[7]; //change the 0 to a 1 or 2 etc. to match your port
   myPort = new Serial(this, portName, 9600); 
   myPort.clear();
-  
-  
+
+
   // Fill sounds
   for ( byte idx = 0; idx != arcadeFiles.length-1; 
-    arcades[idx] = minim.loadFile( arcadeFiles[idx++] + ".mp3") );
+  arcades[idx] = minim.loadFile( arcadeFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx != birdFiles.length-1; 
-    birds[idx] = minim.loadFile( birdFiles[idx++] + ".mp3") );
+  birds[idx] = minim.loadFile( birdFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx != chimesFiles.length-1; 
-    chimes[idx] = minim.loadFile( chimesFiles[idx++] + ".mp3") );
+  chimes[idx] = minim.loadFile( chimesFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx != dripFiles.length-1; 
-    drips[idx] = minim.loadFile( dripFiles[idx++] + ".mp3") );
+  drips[idx] = minim.loadFile( dripFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx != fugleFiles.length-1; 
-    fugle[idx] = minim.loadFile( fugleFiles[idx++] + ".mp3") );
+  fugle[idx] = minim.loadFile( fugleFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx !=impactFiles.length-1; 
-    impacts[idx] = minim.loadFile( impactFiles[idx++] + ".mp3") );
+  impacts[idx] = minim.loadFile( impactFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx != klikFiles.length-1; 
-    kliks[idx] = minim.loadFile( klikFiles[idx++] + ".mp3") );
+  kliks[idx] = minim.loadFile( klikFiles[idx++] + ".mp3") );
 
   for ( byte idx = 0; idx !=plingFiles.length-1; 
-    plings[idx] = minim.loadFile( plingFiles[idx++] + ".mp3") );
+  plings[idx] = minim.loadFile( plingFiles[idx++] + ".mp3") );
 
   soundList.add(arcades);
   soundList.add(birds);
@@ -115,7 +117,7 @@ void setup() {
   // Start backtrack
   backtrack = minim.loadFile("backtrack.mp3", 2048);
   backtrack.loop();
-  
+
   // Init serial prints from Arduino
   serialVal = myPort.readStringUntil(lf);
   serialVal = null;
@@ -123,33 +125,60 @@ void setup() {
 
 void draw() {
 
- 
-
-  while (myPort.available() > 0) {  // If data is available,
+  while (myPort.available () > 0) {  // If data is available,
 
     serialVal = myPort.readStringUntil(lf);
     if (serialVal != null) {
       print("Serial val from Arduino: ");
       println(serialVal);
       serialNo = float(serialVal);  // Converts and prints float
-      print("Serial no in float: ");
-      println(serialNo);
-
-      serialNo = map(serialNo, 0, 23, 0, 7); 
-      int serialNoInt = int(serialNo);
-      
-      print("Mapped sound: ");
-      println(serialNoInt);
-
-      AudioPlayer[] currentSound = soundList.get(serialNoInt);
-
-      int no = int(random(0, currentSound.length));
-      if (currentSound[no].isPlaying() == false) {
-        currentSound[no].rewind();
-        currentSound[no].play();
+      if (!Float.isNaN(serialNo) && serialNo <= 23) {
+        print("Serial no in float: ");
+        println(serialNo);
+  
+        /*
+        
+         if (serialNo == ) {
+         int serialNoInt = 0; // arcades
+         } else if (serialNo == ) {
+         int serialNoInt = 1; //birds
+         } else if(serialNo == ) {
+         int serialNoInt = 2; // chimes
+         } else if(serialNo == ) {
+         int serialNoInt = 3; // drips
+         } else if(serialNo == ) {
+         int serialNoInt = 4; // fugle
+         } else if(serialNo == ) {
+         int serialNoInt = 5; // impacts
+         } else if(serialNo == ) {
+         int serialNoInt = 6; // kliks
+         } else if(serialNo == ) {
+         int serialNoInt = 7; // plings
+         } 
+         
+         */
+  
+        serialNo = map(serialNo, 0, 23, 0, 7); 
+        int serialNoInt = int(serialNo);
+  
+        print("Mapped sound: ");
+        println(serialNoInt);
+  
+        AudioPlayer[] currentSound = soundList.get(serialNoInt);
+  
+        int no = int(random(0, currentSound.length));
+        if (currentSound[no].isPlaying() == false) {
+          currentSound[no].rewind();
+          currentSound[no].play();
+        };
+      } else {
+        println("WRONG");
       }
+
+      
     }
   } 
 
   myPort.clear();
 }
+

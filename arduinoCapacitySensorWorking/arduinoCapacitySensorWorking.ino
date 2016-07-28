@@ -34,20 +34,23 @@ void setup() {
   while (!Serial);        // needed to keep leonardo/micro from starting too fast!
 
   Serial.begin(9600);
-  //Serial.println("Adafruit MPR121 Capacitive Touch sensor test");
+//  Serial.println("Adafruit MPR121 Capacitive Touch sensor test");
 
   //init_cap( cap1, 0x5A );
   //init_cap( cap2, 0x5D );
 
   // Default address is 0x5A, if tied to 3.3V its 0x5B
   // If tied to SDA its 0x5C and if SCL then 0x5D
+  
+  //cap1.setThreshholds(6, 3);
+  //cap2.setThreshholds(6, 3);
 
   //Serial.println( "looking for 0x5A" );
   if (!cap1.begin(0x5A)) {
     //Serial.println("MPR121 0x5A not found, check wiring?");
     while (1);
   }
-  //Serial.println("MPR121 0x5A found!");
+  Serial.println("MPR121 0x5A found!");
 
 
   //Serial.println( "looking for 0x5D" );
@@ -55,7 +58,7 @@ void setup() {
     //Serial.println("MPR121 0x5D not found, check wiring?");
     while (1);
   }
-  //Serial.println("MPR121 0x5D found!");
+ Serial.println("MPR121 0x5D found!");
 
 
 }
@@ -70,21 +73,21 @@ void loop() {
     // check if touched
     if ((currtouched1 & _BV(i)) && !(lasttouched1 & _BV(i)) ) {
       Serial.println(i);
-      //Serial.println(" was touched");
+//      Serial.println(" TOUCHED");
     }
 
     // check if released
     if (!(currtouched1 & _BV(i)) && (lasttouched1 & _BV(i)) ) {
-      //Serial.print(i); Serial.println(" was released");
+//      Serial.print(i); Serial.println(" RELEASED");
     }
 
     if ((currtouched2 & _BV(i)) && !(lasttouched2 & _BV(i)) ) {
       Serial.println(i + 12);
-      //Serial.println(" was touched");
+//      Serial.println(" TOUCCHED!");
     }
 
     if (!(currtouched2 & _BV(i)) && (lasttouched2 & _BV(i)) ) {
-      //Serial.print(i + 12); Serial.println(" was released");
+//      Serial.print(i + 12); Serial.println(" RELEASED");
     }
 
   }
@@ -101,12 +104,12 @@ void loop() {
   Serial.print("\t\t\t\t\t\t\t\t\t\t\t\t\t 0x"); Serial.println(cap1.touched(), HEX);
   Serial.print("Filt: ");
   for (uint8_t i = 0; i < 12; i++) {
-    Serial.print(cap1.filteredData(i)); Serial.print("\t");
+    Serial.print(cap2.filteredData(i)); Serial.print("\t");
   }
   Serial.println();
   Serial.print("Base: ");
   for (uint8_t i = 0; i < 12; i++) {
-    Serial.print(cap1.baselineData(i)); Serial.print("\t");
+    Serial.print(cap2.baselineData(i)); Serial.print("\t");
   }
   Serial.println();
 
